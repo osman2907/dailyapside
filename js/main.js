@@ -10,7 +10,7 @@ $(async () => {
         usuarios.sort((a,b) => a > b ? 1 : -1);
         usuarios.forEach(usuario => {
             $(".usuarios").append(`
-                <div class='mt-2'>
+                <div class='mb-4 mb-md-2 ps-3 ps-md-0'>
                     <input class="form-check-input input-registro" data-name='${usuario}' type="checkbox" value="">
                         <label class="form-check-label" for="flexCheckChecked">
                         ${usuario}
