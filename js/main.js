@@ -32,15 +32,19 @@ $(async () => {
         $(".input-registro").each(function() {
             const check = $(this);
 
-            if(firstTime === true){
-                const name = check.data('name');
-                let busqueda = registros.find(([key, value]) => value == name)
-                if(busqueda){
-                    check.data("key", busqueda[0]);
-                    check.prop('checked', true);
-                    $(".listos").append(check.parent());
-                    $(".faltantes").remove(check.parent());
-                }
+            const name = check.data('name');
+            let busqueda = registros.find(([_key, value]) => value == name)
+            if(busqueda){
+                check.data("key", busqueda[0]);
+                check.prop('checked', true);
+                $(".listos").append(check.parent());
+                $(".faltantes").remove(check.parent());
+                ordenarListas();
+            }else{
+                check.prop('checked', false);
+                $(".faltantes").append(check.parent());
+                $(".listos").remove(check.parent());
+                ordenarListas();
             }
 
             if(check.is(":checked")){
