@@ -417,8 +417,27 @@ export default {
     console.log("Conectando webscoket");
     this.connection = new WebSocket("ws://localhost:8999/");
 
-    this.connection.onmessage = function (event) {
+    this.connection.onmessage = (event) => {
       console.log(event);
+      console.log(JSON.parse(event.data));
+
+      const data = JSON.parse(event.data);
+      switch(data.action){
+        case "user-joined":
+          this.wsUserJoined(data.apsider);
+          break;
+        case "user-left":
+          this.wsUserLeft(data.apsider);
+          break;
+        case "assisted-updated":
+          this.wsAssistedUpdated(data.data);
+          break;
+        case "mandated-updated":
+          this.wsMandatedUpdated(data.apsider);
+          break;
+        default:
+          break;
+      }
     };
 
     this.connection.onopen = function (event) {
@@ -533,7 +552,6 @@ export default {
       }
     },
     onRotateEnd(prize) {
-      alert(prize.value);
       axios
         .post("http://localhost:8999/mandated_apsider", {
           id: prize.value,
@@ -553,11 +571,85 @@ export default {
         }, duration);
       });
     },
+    wsUserJoined(apsider){
+      console.log(apsider);
+      if (apsider === null || apsider === undefined || Object.keys(apsider).length === 0) return;
+      this.activateSnackbar(apsider.name + " Se ha unido a la daily!")
+      for (let i = this.archivedApsiders.length - 1; i >= 0; --i) {
+          if (this.archivedApsiders[i].id === apsider.id) {
+            this.archivedApsiders.splice(i,1);
+          }
+      }
+
+      if(apsider.assisted === 0){
+        const index = this.apsiders.findIndex(a => a.id==apsider.id); 
+        index === -1 ? this.apsiders.push(apsider) : console.log("object already exists");
+      }else{
+        const index = this.assistedApsiders.findIndex(a => a.id==apsider.id); 
+        index === -1 ? this.assistedApsiders.push(apsider) : console.log("object already exists");
+      }
+    },
+
+    wsUserLeft(apsider){
+      console.log(apsider);
+      if (apsider === null || apsider === undefined || Object.keys(apsider).length === 0) return;
+      this.activateSnackbar(apsider.name + " Se ha salido de la daily")
+
+      let sw = false;
+      if(apsider.assisted === 0){
+        for (let i = this.apsiders.length - 1; i >= 0; --i) {
+          if (this.apsiders[i].id === apsider.id) {
+            this.apsiders.splice(i,1);
+            sw = true
+          }
+        }
+      }else{
+        for (let i = this.assistedApsiders.length - 1; i >= 0; --i) {
+          if (this.assistedApsiders[i].id === apsider.id) {
+            this.assistedApsiders.splice(i,1);
+            sw = true
+          }
+        }
+      }
+
+      if (sw){
+        this.archivedApsiders.push(apsider);
+      }
+    },
+
+    wsAssistedUpdated(data){
+      if (data === null || data === undefined || Object.keys(data).length === 0) return;
+      if(data.assist === 0){
+        for (let i = this.assistedApsiders.length - 1; i >= 0; --i) {
+          if (this.assistedApsiders[i].id === data.id) {
+            const apsider = this.assistedApsiders[i];
+            this.assistedApsiders.splice(i,1);
+            this.apsiders.push(apsider);
+            this.activateSnackbar(apsider.name + " Se ha movido a la izquierda")
+          }
+        }
+      }else{
+        for (let i = this.apsiders.length - 1; i >= 0; --i) {
+          if (this.apsiders[i].id === data.id) {
+            const apsider = this.apsiders[i]; 
+            this.apsiders.splice(i,1);
+            this.assistedApsiders.push(apsider);
+            this.activateSnackbar(apsider.name + " Se ha movido a la derecha")
+          }
+        }
+      }
+    },
+
+    wsMandatedUpdated(apsider){
+      if(apsider === null || apsider === undefined || Object.keys(apsider).length === 0) return;
+      this.apsider_week = apsider;
+      this.activateSnackbar("Felicitaciones! " + apsider.name);
+    }
   },
   computed: {
     disable_encargado_btn() {
       // desactivar boton si no es viernes
-      // return moment().day() !== 5;
+      return moment().day() !== 5;
     },
   },
 };
