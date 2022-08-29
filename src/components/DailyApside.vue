@@ -643,7 +643,7 @@ export default {
     wsMandatedUpdated(apsider){
       if(apsider === null || apsider === undefined || Object.keys(apsider).length === 0) return;
       this.apsider_week = apsider;
-      this.activateSnackbar("Felicitaciones! " + apsider.name);
+      this.activateSnackbar("Felicitaciones! " + apsider.name + " Haz sido azotado!");
     }
   },
   computed: {
