@@ -12,6 +12,12 @@ Vue.component("draggable", draggable);
 import moment from "moment";
 Vue.prototype.moment = moment;
 
+// Axios.js //
+import axios from 'axios'
+axios.defaults.baseURL = process.env.VUE_APP_BASEURL
+
+Vue.prototype.$axios = axios
+
 new Vue({
   vuetify,
   render: (h) => h(App),
