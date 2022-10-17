@@ -356,7 +356,6 @@
 <script>
 import moment from "moment";
 import "moment-timezone";
-import axios from "axios";
 import FortuneWheel from "vue-fortune-wheel";
 import "vue-fortune-wheel/lib/vue-fortune-wheel.css";
 export default {
@@ -452,8 +451,8 @@ export default {
   methods: {
     // request axios
     getData() {
-      axios
-        .get("http://localhost:8999/get-apsiders")
+      this.$axios
+        .get("/get-apsiders")
         .then((response) => {
           console.log(100 / response.data.result.length);
           let probability = Math.trunc(100 / (response.data.result.length - 1));
@@ -523,8 +522,8 @@ export default {
     },
 
     update_apsider(id, assist) {
-      axios
-        .post("http://localhost:8999/update_assist", {
+      this.$axios
+        .post("/update_assist", {
           assist,
           id,
         })
@@ -552,8 +551,8 @@ export default {
       }
     },
     onRotateEnd(prize) {
-      axios
-        .post("http://localhost:8999/mandated_apsider", {
+      this.$axios
+        .post("/mandated_apsider", {
           id: prize.value,
         })
         .then((result) => {
