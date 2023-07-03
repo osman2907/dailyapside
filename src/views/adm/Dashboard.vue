@@ -354,9 +354,33 @@
             :options="howManyAssistsChart"
             :series="howManyAssistsSeries"
           />
-          <v-card-title> Total asistidos (hoy - 1 semana) </v-card-title>
+          <v-card-title> Total asistidos</v-card-title>
           <v-card-subtitle>Grafico que muestra el total de 
-            apsiders asistidos a la daily desde hoy hasta 1 semana atrás</v-card-subtitle>
+            apsiders asistidos a la daily por dia</v-card-subtitle>
+          <v-card-text>
+              <span class="mr-4">Filtros:</span>
+              <v-btn
+                class="mx-1"
+                x-small
+                :loading="mostAssistedLoading"
+                @click="getHowManyAssists()"
+                >1 Mes</v-btn
+              >
+              <v-btn
+                x-small
+                class="mx-1"
+                :loading="mostAssistedLoading"
+                @click="getHowManyAssists(3)"
+                >3 Meses</v-btn
+              >
+              <v-btn
+                class="mx-1"
+                x-small
+                :loading="mostAssistedLoading"
+                @click="getHowManyAssists(12)"
+                >1 Año</v-btn
+              >
+            </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -606,11 +630,12 @@ export default {
         });
     },
 
-    getHowManyAssists() {
+    getHowManyAssists(interval_months = 1) {
       this.howManyAssistsLoading = true;
       this.$axios
         .get("/howManyAssists", {
           headers: { Authorization: localStorage.getItem("access_token") },
+          params: { interval: interval_months }
         })
         .then((response) => {
           this.$refs.howManyAssistsRef.updateOptions({

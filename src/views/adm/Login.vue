@@ -30,9 +30,21 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" :loading="loading" block @click="login()">Login</v-btn>
+            <v-btn color="primary" :loading="loading" block @click="login()"
+              >Login</v-btn
+            >
           </v-card-actions>
         </v-card>
+        <div class="my-4">
+          <router-link
+            :to="{
+              name: 'DailyApside',
+            }"
+          >
+            <v-icon>mdi-arrow-left</v-icon>
+            Volver a la daily</router-link
+          >
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -45,25 +57,25 @@ export default {
     return {
       username: "",
       usernameRules: [
-        value => {
-            if (value) return true
-            return 'El nombre de usuario es requerido.'
-        }
+        (value) => {
+          if (value) return true;
+          return "El nombre de usuario es requerido.";
+        },
       ],
       password: "",
       passwordRules: [
-          value => {
-              if (value) return true
-              return 'La contraseña es requerida.'
-          },
-          value => {
-              if (value && value.length >= 8) return true
-              return 'La contraseña debe tener al menos 8 caracteres.'
-          }
+        (value) => {
+          if (value) return true;
+          return "La contraseña es requerida.";
+        },
+        (value) => {
+          if (value && value.length >= 8) return true;
+          return "La contraseña debe tener al menos 8 caracteres.";
+        },
       ],
       error: false,
       errorMessage: "",
-      loading: false
+      loading: false,
     };
   },
   methods: {
@@ -76,9 +88,9 @@ export default {
       this.$axios
         .post("/adm/login", {
           username: this.username,
-          password: this.password
+          password: this.password,
         })
-        .then(response => {
+        .then((response) => {
           console.log(response);
           this.loading = false;
 
@@ -90,10 +102,10 @@ export default {
 
           this.$store.dispatch("login", response.data);
           this.$router.push({
-            name: "Dashboard"
+            name: "Dashboard",
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.loading = false;
         });

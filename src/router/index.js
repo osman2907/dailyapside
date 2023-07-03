@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '../store'
 import VueRouter from 'vue-router'
 import DailyApside from '../views/DailyApside.vue'
 import PageNotFound from '../views/PageNotFound.vue'
@@ -77,7 +78,13 @@ router.beforeEach((to, from, next) => {
       localStorage.removeItem('type');
       localStorage.removeItem('access_token');
       localStorage.removeItem('expires_in');
+
+      store.dispatch('tokenExpired');
+      store.dispatch('logout');
+      return next({ name: 'Login' });
     }
+  } else {
+    store.dispatch('logout');
   }
 
   const excludesAuth = to.meta.excludesAuth || false;
