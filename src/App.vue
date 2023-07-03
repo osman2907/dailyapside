@@ -1,23 +1,31 @@
 <template>
-  <v-app>
-    <v-main>
-      <DailyApside />
-    </v-main>
+  <v-app class="bg-white">
+    <AdmSidebar v-if="isLoggedIn" />
+    <!-- app -->
+    <div :style="isLoggedIn ? 'margin-left: 256px;' : ''" style="height: 100%">
+      <router-view />
+    </div>
   </v-app>
 </template>
 
 <script>
-import DailyApside from "./components/DailyApside";
+import AdmSidebar from "@/components/AdmSidebar.vue";
 
 export default {
-  name: "App",
-
   components: {
-    DailyApside,
+    AdmSidebar,
   },
-
-  data: () => ({
-    //
-  }),
+  name: "App",
+  data() {
+    return {
+      isLoggedIn: localStorage.getItem("token") ? true : false,
+    };
+  },
 };
 </script>
+
+<style scoped>
+#app {
+  background-color: #f5f5f5 !important;
+}
+</style>

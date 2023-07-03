@@ -1,6 +1,9 @@
 import Vue from "vue";
+import Vuex from 'vuex'
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
+import VueApexCharts from 'vue-apexcharts'
+import VCalendar from 'v-calendar';
 
 Vue.config.productionTip = false;
 
@@ -14,11 +17,54 @@ Vue.prototype.moment = moment;
 
 // Axios.js //
 import axios from 'axios'
-axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 
-Vue.prototype.$axios = axios
+import router from './router';
+axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
+
+Vue.prototype.$axios = axios;
+
+Vue.use(Vuex)
+const store = new Vuex.Store({
+  state () {
+    return {
+    }
+  },
+  mutations: {
+    login (state, data) {
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('type', data.type)
+      localStorage.setItem('access_token',
+        data.type + " " + data.token)
+      localStorage.setItem('expires_in', data.expiration)
+    },
+    logout (state) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('type')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('expires_in')
+    }
+  },
+  actions: {
+    login ({ commit }, data) {
+      commit('login', data)
+    },
+    logout ({ commit }) {
+      commit('logout')
+    }
+  }
+
+});
+
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
+
+Vue.use(VCalendar, {
+  componentPrefix: 'vc',  // Use <vc-calendar /> instead of <v-calendar />
+});
 
 new Vue({
   vuetify,
-  render: (h) => h(App),
+  router,
+  store,
+  render: (h) => h(App)
 }).$mount("#app");

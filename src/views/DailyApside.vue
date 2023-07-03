@@ -3,10 +3,10 @@
     <v-row>
       <v-col
         cols="12"
-        class="d-flex justify-sm-space-between justify-center flex-wrap"
+        class="align-center d-flex justify-center justify-lg-space-between flex-wrap col col-12"
         style="padding: 0"
       >
-        <v-img src="@/assets/images/apside.png" max-width="320"></v-img>
+        <v-img src="@/assets/images/apside.png" max-width="520"></v-img>
         <v-card class="crown-card">
           <v-container fluid>
             <v-row v-if="!loading">
@@ -69,16 +69,21 @@
         <h1 style="color: #202055">
           Daily {{ moment().format("DD/MM/YYYY") }}
         </h1>
-        <p>Frase de la semana: <strong>Google Apside</strong></p>
-        <v-btn class="mx-2" @click="archiveDialog = !archiveDialog">
+        <p>Frase de la semana: <strong>Node vs Python</strong></p>
+        <v-btn class="mx-2 my-2" @click="moveAllLeft">
+          <v-icon>mdi-arrow-left</v-icon>
+          <span>Mover todos izquierda</span>
+        </v-btn>
+
+        <v-btn class="mx-2 my-2" @click="archiveDialog = !archiveDialog">
           <v-icon>mdi-archive</v-icon>
           <span>Desconectados</span>
         </v-btn>
 
         <v-btn
-          :disabled="disable_encargado_btn"
+          :disabled="false"
           @click="encargadoDialog = !encargadoDialog"
-          class="mx-2"
+          class="mx-2 my-2"
         >
           <v-icon> mdi-crown </v-icon>
           Azote
@@ -117,7 +122,8 @@
                       v-for="(apsider, index) in apsiders"
                       :key="index"
                     >
-                      <v-list-item-avatar size="50">
+                      <v-list-item-avatar 
+                      size="50">
                         <v-img
                           @click="openInfoDialog(apsider)"
                           :src="
@@ -341,6 +347,35 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="azoteDialog" width="500" scrollable>
+      <v-card>
+        <v-card-title class="text-h5 lighten-2"> Nuevo Azotado </v-card-title>
+
+        <v-container fluid>
+          <v-row class="px-5">
+            <v-col v-if="!loading">
+              <FortuneWheel
+                style="width: 435px"
+                :canvas="canvasOptions"
+                :prizes="prizes"
+                :verify="cavansVerify"
+                @rotateStart="onCanvasRotateStart"
+                @rotateEnd="onRotateEnd"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="encargadoDialog = false"
+            >Cerrar</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar
       v-model="snackbar"
       :timeout="2000"
@@ -385,6 +420,9 @@ export default {
     // apsiders asistidos
     assistedApsiders: [],
 
+    // Todos los apsiders
+    allApsiders: [],
+
     // detalle apsider dialog
     dialog: false,
     dialog_data: {
@@ -407,6 +445,13 @@ export default {
       btnWidth: 80,
       textDirection: "vertical",
       textRadius: 230,
+    },
+
+    azoteDialog: false,
+    azoteDialogData: {
+      name: "",
+      email: "",
+      avatar: "user-icon.png",
     },
     prizes: [],
     loading: true,
@@ -449,30 +494,38 @@ export default {
   },
 
   methods: {
+    rollProbability(){
+      this.prizes = [];
+      let probability = 0;
+      let largo = this.allApsiders.length - 1;
+      let selected = Math.floor(Math.random() * largo);
+      this.allApsiders.forEach((apsider, index) => {
+        if (apsider.mandated === 1) return;
+        if (selected === index) {
+          probability = 100;
+        }else{
+          probability = 0
+        }
+        this.prizes.push({
+          id: apsider.id,
+          name: apsider.name,
+          value: apsider.id,
+          bgColor: index % 2 === 0 ? "#202055" : "#ef0359",
+          color: "#ffffff",
+          probability: probability,
+          weight: 1,
+        });
+      });
+    },
+
     // request axios
     getData() {
       this.$axios
         .get("/get-apsiders")
         .then((response) => {
-          console.log(100 / response.data.result.length);
-          let probability = Math.trunc(100 / (response.data.result.length - 1));
-          let sum = 0;
-          response.data.result.forEach((apsider, index) => {
-            if (apsider.mandated === 1) return;
-            if (index === response.data.result.length - 1) {
-              probability = Math.abs(sum - 100);
-            }
-            sum += probability;
-            this.prizes.push({
-              id: apsider.id,
-              name: apsider.name,
-              value: apsider.id,
-              bgColor: index % 2 === 0 ? "#202055" : "#ef0359",
-              color: "#ffffff",
-              probability: probability,
-              weight: 1,
-            });
-          });
+
+          this.allApsiders = response.data.result;
+          this.rollProbability();
 
           this.apsiders = response.data.result.filter((apsider) => {
             return apsider.assisted === 0 && apsider.archived === 0;
@@ -491,6 +544,18 @@ export default {
               return apsider.mandated === 1;
             }) || null;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    moveAllLeft() {
+      this.$axios
+        .post("/reset_assisted")
+        .then((response) => {
+          console.log(response);
+          this.activateSnackbar("Se han reiniciado los asistentes");
         })
         .catch((error) => {
           console.log(error);
@@ -551,6 +616,7 @@ export default {
       }
     },
     onRotateEnd(prize) {
+      this.rollProbability();
       this.$axios
         .post("/mandated_apsider", {
           id: prize.value,
