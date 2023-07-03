@@ -4,6 +4,8 @@ import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import VueApexCharts from 'vue-apexcharts'
 import VCalendar from 'v-calendar';
+import createPersistedState from "vuex-persistedstate";
+
 
 Vue.config.productionTip = false;
 
@@ -59,8 +61,8 @@ const store = new Vuex.Store({
     logout ({ commit }) {
       commit('logout')
     }
-  }
-
+  },
+  plugins: [createPersistedState()]
 });
 
 Vue.use(VueApexCharts)

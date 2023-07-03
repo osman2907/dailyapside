@@ -18,7 +18,10 @@ const routes = [
   {
     path: '/adm/login',
     name: 'Login',
-    component: AdmLogin
+    component: AdmLogin,
+    meta: {
+      excludesAuth: true
+    }
   },
   {
     path: '/adm',
@@ -77,8 +80,15 @@ router.beforeEach((to, from, next) => {
     }
   }
 
+  const excludesAuth = to.meta.excludesAuth || false;
+  if (excludesAuth === true) {
+    if (localStorage.getItem('access_token')) {
+      return next({ name: 'Dashboard' });
+    }
+    else return next();
+  }
+
   const requiresAuth = to.meta.requiresAuth || false;
-  console.log(requiresAuth)
 
   if (requiresAuth === false) {
     return next();

@@ -89,7 +89,9 @@ export default {
           }
 
           this.$store.dispatch("login", response.data);
-          this.$router.push("/");
+          this.$router.push({
+            name: "Dashboard"
+          });
         })
         .catch(error => {
           console.log(error);

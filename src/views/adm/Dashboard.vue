@@ -216,7 +216,7 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="12" lg="4">
+      <v-col cols="12" md="12" lg="6">
         <v-card>
           <v-simple-table :loading="arriveOnTimeLoading">
             <template v-slot:default>
@@ -281,7 +281,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="12" lg="4">
+      <v-col cols="12" md="12" lg="6">
         <v-card>
           <v-simple-table :loading="notArriveOnTimeLoading">
             <template v-slot:default>
@@ -345,7 +345,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="12" lg="4">
+      <v-col cols="12" md="12" lg="12">
         <v-card>
           <apexchart
             width="100%"
