@@ -27,21 +27,29 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state () {
     return {
+      loggedIn: false,
     }
+  },
+  getters: {
+    isLoggedIn: state => {
+      return state.loggedIn;
+    },
   },
   mutations: {
     login (state, data) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('type', data.type)
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('type', data.type);
       localStorage.setItem('access_token',
-        data.type + " " + data.token)
-      localStorage.setItem('expires_in', data.expiration)
+        data.type + " " + data.token);
+      localStorage.setItem('expires_in', data.expiration);
+      state.loggedIn = true;
     },
     logout (state) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('type')
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('expires_in')
+      localStorage.removeItem('token');
+      localStorage.removeItem('type');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('expires_in');
+      state.loggedIn = false;
     }
   },
   actions: {

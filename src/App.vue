@@ -16,10 +16,10 @@ export default {
     AdmSidebar,
   },
   name: "App",
-  data() {
-    return {
-      isLoggedIn: localStorage.getItem("token") ? true : false,
-    };
+  computed: {
+    isLoggedIn: function() {
+      return this.$store.getters.isLoggedIn;
+    },
   },
 };
 </script>
