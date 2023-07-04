@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from '../store'
 import VueRouter from 'vue-router'
 import DailyApside from '../views/DailyApside.vue'
+import DailyApside2 from '../views/DailyApsideV2.vue'
 import PageNotFound from '../views/PageNotFound.vue'
 import AdmLogin from '../views/adm/Login.vue'
 import AdmApsiders from '../views/adm/AdmApsiders.vue'
@@ -15,6 +16,11 @@ const routes = [
     path: '/',
     name: 'DailyApside',
     component: DailyApside
+  },
+  {
+    path: '/testasdasd',
+    name: 'Test',
+    component: DailyApside2
   },
   {
     path: '/adm/login',
