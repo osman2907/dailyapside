@@ -2,8 +2,10 @@
   <v-app class="bg-white">
     <AdmSidebar v-if="isLoggedIn" />
     <!-- app -->
+    <transition name="slide" appear>
     <div :style="isLoggedIn ? 'margin-left: 256px;' : ''" style="height: 100%">
-      <router-view />
+
+        <router-view />
       <div class="version-floating">
         Versión: {{ appVersion }}
         <v-btn
@@ -18,6 +20,7 @@
         </v-btn>
       </div>
     </div>
+    </transition>
 
     <!-- bugReportDialog -->
     <v-dialog v-model="bugReportDialog" width="auto" persistent max-width="500">
