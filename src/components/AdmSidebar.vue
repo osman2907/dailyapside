@@ -68,7 +68,7 @@
       <v-list-item
         link
         active-class="link-active"
-        :to="{ name: 'DailyApside' }"
+        :to="{ name: 'GroupSelection' }"
         exact
       >
         <v-list-item-icon>

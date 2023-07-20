@@ -22,7 +22,7 @@
                 v-for="apsider in group.apsiders"
                 :key="apsider.id"
               >
-                {{ apsider }} <br />
+                {{ apsider.name }} <br />
               </small>
             </v-tooltip>
           </v-card-subtitle>

@@ -42,7 +42,7 @@ const routes = [
     name: 'AdmGroups',
     component: AdmGroups,
     meta: {
-      excludesAuth: true
+      requiresAuth: true
     }
   },
   {
