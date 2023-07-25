@@ -169,7 +169,7 @@
                   <v-file-input
                     @change="previewImgAddApsider"
                     label="Avatar *"
-                    accept="image/jpg"
+                    accept="image/jpeg"
                     v-model="addApsiderDialogForm.image"
                   >
                   </v-file-input>
@@ -250,7 +250,7 @@
                   <v-file-input
                     @change="previewImgEditApsider"
                     label="Avatar *"
-                    accept="image/jpg"
+                    accept="image/jpeg"
                     v-model="editApsiderDialogForm.image"
                   >
                   </v-file-input>

@@ -250,7 +250,7 @@
             color="green darken-1"
             :loading="addApsiderDialogLoading"
             text
-            @click="addApsider()"
+            @click="addApsiders()"
           >
             Agregar
           </v-btn>
@@ -323,12 +323,12 @@
             Cerrar
           </v-btn>
           <v-btn
-            color="green darken-1"
+            color="orange darken-1"
             :loading="removeApsiderDialogLoading"
             text
-            @click="removeApsider()"
+            @click="removeApsiders()"
           >
-            Agregar
+            Quitar
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -404,7 +404,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="createGroupDialog = false">
+          <v-btn color="gray darken-1" text @click="createGroupDialog = false">
             Cancelar
           </v-btn>
           <v-btn color="green darken-1" text @click="createGroup()">
@@ -439,7 +439,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editGroupDialog = false">
+          <v-btn color="gray darken-1" text @click="editGroupDialog = false">
             Cancelar
           </v-btn>
           <v-btn
@@ -471,7 +471,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="deleteGroupDialog = false">
+          <v-btn color="gray darken-1" text @click="deleteGroupDialog = false">
             Cancelar
           </v-btn>
           <v-btn
@@ -546,6 +546,7 @@ export default {
       editGroupDialogLoading: false,
       editGroupDialogData: {},
       editGroupDialogFormData: {
+        id: 0,
         name: "",
       },
 
@@ -650,6 +651,8 @@ export default {
 
     openEditGroupDialog(data) {
       this.editGroupDialogData = data;
+      this.editGroupDialogFormData.id = data.id;
+      this.editGroupDialogFormData.name = data.name;
       this.editGroupDialog = true;
     },
 
@@ -766,6 +769,7 @@ export default {
         .patch(
           "/group",
           {
+            id: this.editGroupDialogFormData.id,
             name: this.editGroupDialogFormData.name,
           },
           {
@@ -783,7 +787,14 @@ export default {
             return;
           }
 
-          this.$refs.createGroupForm.reset();
+          this.grupos.forEach((grupo, index) => {
+            if (grupo.id === this.editGroupDialogFormData.id) {
+              this.grupos[index].name = this.editGroupDialogFormData.name;
+            }
+          });
+          
+          this.editGroupDialog = false
+
           this.appSnackbar = true;
           this.appSnackbarText = "Grupo creado exitosamente.";
         })
@@ -821,7 +832,7 @@ export default {
             }
           });
 
-          this.deleteGroupDialog = false
+          this.deleteGroupDialog = false;
 
           this.appSnackbar = true;
           this.appSnackbarText = "Grupo eliminado exitosamente.";
@@ -831,6 +842,131 @@ export default {
 
           this.appSnackbar = true;
           this.appSnackbarText = "Error al eliminar grupo.";
+        });
+    },
+
+    addApsiders() {
+      this.addApsiderDialogLoading = true;
+
+      const selectedApsiders = this.addApsiderDialogData.apsiders.filter(
+        (apsider) => {
+          return apsider.selected === true;
+        }
+      );
+      this.$axios
+        .post(
+          "/addApsiderGroup",
+          {
+            apsidersToAdd: selectedApsiders,
+            groupId: this.addApsiderDialogData.id,
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("access_token"),
+            },
+          }
+        )
+        .then((res) => {
+          this.addApsiderDialogLoading = false;
+
+          if (res.data.status !== "success") {
+            this.appSnackbar = true;
+            this.appSnackbarText = "Hubo un  error al añadir apsiders.";
+            return;
+          }
+
+          const index = this.grupos.findIndex(
+            (grupo) => grupo.id === this.addApsiderDialogData.id
+          );
+
+          if (index !== -1) {
+            this.grupos[index].apsiders.push(...selectedApsiders);
+          }
+
+          selectedApsiders.forEach((apsider) => {
+            const indexToDelete = this.apsidersWithoutGroup.findIndex(
+              (element) => element.id === apsider.id
+            );
+            if (indexToDelete !== -1) {
+              this.apsidersWithoutGroup.splice(indexToDelete, 1);
+            }
+          });
+
+          this.addApsiderDialog = false;
+
+          this.appSnackbar = true;
+          this.appSnackbarText = "Apsiders añadidos correctamente.";
+        })
+        .catch(() => {
+          this.addApsiderDialogLoading = false;
+
+          this.appSnackbar = true;
+          this.appSnackbarText = "Error al añadir apsiders.";
+        });
+    },
+
+    removeApsiders() {
+      this.removeApsiderDialogLoading = true;
+
+      const selectedApsidersRemove =
+        this.removeApsiderDialogData.apsiders.filter((apsider) => {
+          return apsider.selected === true;
+        });
+      this.$axios
+        .post(
+          "/removeApsiderGroup",
+          {
+            apsidersToRemove: selectedApsidersRemove,
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("access_token"),
+            },
+          }
+        )
+        .then((res) => {
+          this.removeApsiderDialogLoading = false;
+
+          if (res.data.status !== "success") {
+            this.appSnackbar = true;
+            this.appSnackbarText = "Hubo un  error al remover apsiders.";
+            return;
+          }
+
+          // eliminar los apsiders seleccionados del grupo
+          const index = this.grupos.findIndex(
+            (grupo) => grupo.id === this.removeApsiderDialogData.id
+          );
+
+          if (index !== -1) {
+            selectedApsidersRemove.forEach((apsider) => {
+              const index2 = this.grupos[index].apsiders.findIndex(
+                (apsiderGroup) => apsiderGroup.id === apsider.id
+              );
+
+              if (index2 !== -1) {
+                console.log(this.grupos[index].apsiders[index2]);
+                this.grupos[index].apsiders.splice(index2, 1);
+              }
+            });
+          }
+
+          // añadir apsiders eliminados al array de apsiders sin grupo
+          selectedApsidersRemove.forEach(apsider => {
+            this.apsidersWithoutGroup.push(apsider);  
+          })
+          
+          this.removeApsiderDialog = false;
+
+          this.appSnackbar = true;
+          this.appSnackbarText = "Apsiders removidos correctamente.";
+        })
+        .catch((err) => {
+          console.log(err);
+          this.removeApsiderDialogLoading = false;
+
+          this.appSnackbar = true;
+          this.appSnackbarText = "Error al remover apsiders.";
         });
     },
   },
