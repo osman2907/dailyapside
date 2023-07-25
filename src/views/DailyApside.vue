@@ -6,7 +6,7 @@
         class="align-center d-flex justify-center justify-lg-space-between flex-wrap col col-12"
         style="padding: 0"
       >
-        <v-img src="@/assets/images/apside.png" max-width="520"></v-img>
+        <v-img src="@/assets/images/apside.png" max-width="350"></v-img>
         <v-card class="crown-card">
           <v-container fluid>
             <v-row v-if="!loading">
@@ -20,7 +20,7 @@
                   <v-img
                     @click="openInfoDialog(apsider_week)"
                     :src="
-                      'http://localhost:8999/apsiders/' + apsider_week.avatar ??
+                      basePathApsiders + apsider_week.avatar ??
                       'user-icon.png'
                     "
                   ></v-img>
@@ -40,7 +40,7 @@
               >
                 <v-avatar size="65" class="zoom-avatar mr-5">
                   <v-img
-                    :src="'http://localhost:8999/apsiders/' + 'user-icon.png'"
+                    :src="basePathApsiders + 'user-icon.png'"
                   ></v-img>
                 </v-avatar>
                 <v-card-text class="pa-3">
@@ -62,6 +62,12 @@
             </v-row>
           </v-container>
         </v-card>
+      </v-col>
+      <v-col cols="12">
+        <v-btn dark href="/">
+          <v-icon>mdi-arrow-left</v-icon>
+          <span>Volver a la selección de grupo</span>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -127,7 +133,7 @@
                         <v-img
                           @click="openInfoDialog(apsider)"
                           :src="
-                            'http://localhost:8999/apsiders/' +
+                            basePathApsiders +
                               apsider.avatar ?? 'user-icon.png'
                           "
                         ></v-img>
@@ -188,7 +194,7 @@
                         <v-img
                           @click="openInfoDialog(apsider)"
                           :src="
-                            'http://localhost:8999/apsiders/' +
+                            basePathApsiders +
                               apsider.avatar ?? 'user-icon.png'
                           "
                         ></v-img>
@@ -237,7 +243,7 @@
                   border-image: linear-gradient(40deg,rgba(32, 32, 85, 1) 0%,rgba(249, 0, 90, 1) 72%)1;
                 "
                 :src="
-                  'http://localhost:8999/apsiders/' + dialog_data.avatar ??
+                  basePathApsiders + dialog_data.avatar ??
                   'user-icon.png'
                 "
               ></v-img>
@@ -277,7 +283,7 @@
                   <v-list-item-avatar size="50">
                     <v-img
                       :src="
-                        'http://localhost:8999/apsiders/' + apsider.avatar ??
+                        basePathApsiders + apsider.avatar ??
                         'user-icon.png'
                       "
                     ></v-img>
@@ -455,6 +461,7 @@ export default {
     },
     prizes: [],
     loading: true,
+    basePathApsiders: process.env.VUE_APP_APSIDERS
   }),
 
   created() {
@@ -521,7 +528,9 @@ export default {
     // request axios
     getData() {
       this.$axios
-        .get("/get-apsiders")
+        .get("/get-apsiders",{
+          params: { groupId: this.$route.params.group }
+        })
         .then((response) => {
 
           this.allApsiders = response.data.result;
@@ -612,7 +621,6 @@ export default {
             alert("Failed verification");
           }
         });
-        return;
       }
     },
     onRotateEnd(prize) {
@@ -620,6 +628,7 @@ export default {
       this.$axios
         .post("/mandated_apsider", {
           id: prize.value,
+          groupId: this.$route.params.group,
         })
         .then((result) => {
           console.log(result);
@@ -637,8 +646,20 @@ export default {
       });
     },
     wsUserJoined(apsider){
-      console.log(apsider);
-      if (apsider === null || apsider === undefined || Object.keys(apsider).length === 0) return;
+      console.log("user-joined ws",apsider);
+      console.log("group_id",apsider.channel_id);
+      if (
+        apsider === null ||
+        apsider === undefined ||
+        Object.keys(apsider).length === 0 ||
+        parseInt(apsider.channel_id) !== parseInt(this.$route.params.group) || // valida que el usuario este en el canal de discord que pertenece
+        parseInt(apsider.grupo_id) !== parseInt(this.$route.params.group) // valida que el usuario pertenezca al grupo
+        ) {
+          console.log("entre if validacion wsuserjoined")
+          return;
+        };
+      
+      console.log("pase validacion");
       this.activateSnackbar(apsider.name + " Se ha unido a la daily!")
       for (let i = this.archivedApsiders.length - 1; i >= 0; --i) {
           if (this.archivedApsiders[i].id === apsider.id) {

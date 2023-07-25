@@ -8,14 +8,21 @@ import AdmLogin from '../views/adm/Login.vue'
 import AdmApsiders from '../views/adm/AdmApsiders.vue'
 import AdmDashboard from '../views/adm/Dashboard.vue'
 import AdmAsistencias from '../views/adm/Asistencia.vue'
+import AdmGroups from '../views/adm/AdmGroups.vue'
+import SelectGroup from '../views/SelectGroups.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'GroupSelection',
+    component: SelectGroup,
+  },
+  {
+    path: '/daily/:group',
     name: 'DailyApside',
-    component: DailyApside
+    component: DailyApside,
   },
   {
     path: '/testasdasd',
@@ -28,6 +35,14 @@ const routes = [
     component: AdmLogin,
     meta: {
       excludesAuth: true
+    }
+  },
+  {
+    path: '/adm/grupos',
+    name: 'AdmGroups',
+    component: AdmGroups,
+    meta: {
+      requiresAuth: true
     }
   },
   {

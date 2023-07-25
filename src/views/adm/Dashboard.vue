@@ -238,7 +238,7 @@
                   <td>
                     <v-avatar class="my-2" size="45">
                     <img
-                      :src="'http://localhost:8999/apsiders/' + item.avatar"
+                      :src="basePathApsiders + item.avatar"
                       style="height: auto !important"
                       alt="Avatar"
                     />
@@ -303,7 +303,7 @@
                   <td>
                     <v-avatar class="my-2" size="45">
                     <img
-                      :src="'http://localhost:8999/apsiders/' + item.avatar"
+                      :src="basePathApsiders + item.avatar"
                       style="height: auto !important"
                       alt="Avatar"
                     />
@@ -504,6 +504,7 @@ export default {
       apsidersDiscord: 0,
       notInServer: 0,
       inServer: 0,
+      basePathApsiders: process.env.VUE_APP_APSIDERS
     };
   },
   mounted() {

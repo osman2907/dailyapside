@@ -38,7 +38,7 @@
         <div class="my-4">
           <router-link
             :to="{
-              name: 'DailyApside',
+              name: 'GroupSelection',
             }"
           >
             <v-icon>mdi-arrow-left</v-icon>

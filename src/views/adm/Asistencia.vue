@@ -26,7 +26,7 @@
                 <td>
                   <v-avatar class="my-2" size="45">
                     <img
-                      :src="'http://localhost:8999/apsiders/' + row.item.avatar"
+                      :src="basePathApsiders + row.item.avatar"
                       style="height: auto !important"
                       alt="Avatar"
                     />
@@ -109,6 +109,7 @@ export default {
           dates: new Date(2023, 6, 28),
         },
       ],
+      basePathApsiders: process.env.VUE_APP_APSIDERS
     };
   },
   created() {

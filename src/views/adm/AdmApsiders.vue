@@ -26,7 +26,7 @@
                 <td>
                   <v-avatar class="my-2" size="45" @mouseover="incrementSize">
                     <img
-                      :src="'http://localhost:8999/apsiders/' + row.item.avatar"
+                      :src="basePathApsiders + row.item.avatar"
                       style="height: auto !important"
                       alt="Avatar"
                     />
@@ -169,7 +169,7 @@
                   <v-file-input
                     @change="previewImgAddApsider"
                     label="Avatar *"
-                    accept="image/jpg"
+                    accept="image/jpeg"
                     v-model="addApsiderDialogForm.image"
                   >
                   </v-file-input>
@@ -410,6 +410,7 @@ export default {
         email: "",
         image: null,
         url: "",
+        group_id: ""
       },
       editApsiderLoading: false,
       editEmailRules: [(v) => /.+@.+/.test(v) || "El correo debe ser valido"],
@@ -419,6 +420,7 @@ export default {
       deleteApsiderLoading: false,
 
       activateApsiderLoading: false,
+      basePathApsiders: process.env.VUE_APP_APSIDERS
     };
   },
   created() {
@@ -446,7 +448,9 @@ export default {
       this.editApsiderDialogForm.email = apsider.email;
       this.editApsiderDialogForm.azotado = apsider.azotado;
       this.editApsiderDialogForm.url =
-        "http://localhost:8999/apsiders/" + apsider.avatar;
+        this.basePathApsiders + apsider.avatar;
+      this.editApsiderDialogForm.group_id = apsider.grupo_id;
+
     },
 
     openDeleteApsideDialog(apsider) {
@@ -454,7 +458,7 @@ export default {
       this.deleteApsiderDialogData.id = apsider.id;
       this.deleteApsiderDialogData.name = apsider.name;
       this.deleteApsiderDialogData.url =
-        "http://localhost:8999/apsiders/" + apsider.avatar;
+        this.basePathApsiders + apsider.avatar;
     },
 
     previewImgAddApsider() {
@@ -522,6 +526,7 @@ export default {
       formData.append("name", this.addApsiderDialogForm.name);
       formData.append("email", this.addApsiderDialogForm.email);
       formData.append("avatar", this.addApsiderDialogForm.image);
+      console.log("avatar:", this.addApsiderDialogForm.image);
 
       this.$axios
         .post("/apsider", formData, {
@@ -589,6 +594,7 @@ export default {
             this.$axios
               .post("/mandated_apsider", {
                 id: this.editApsiderDialogForm.id,
+                groupId: this.editApsiderDialogForm.group_id,
               })
               .then((response) => {
                 console.log(response);
