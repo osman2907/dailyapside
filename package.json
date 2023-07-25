@@ -1,0 +1,45 @@
+{
+  "name": "dailyapside",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "apexcharts": "^3.41.0",
+    "axios": "^0.27.2",
+    "core-js": "^3.6.5",
+    "dotenv": "^16.0.3",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.34",
+    "v-calendar": "^2.4.1",
+    "vue": "^2.6.11",
+    "vue-apexcharts": "^1.6.2",
+    "vue-fortune-wheel": "^1.0.3",
+    "vue-loading-overlay": "^5.0",
+    "vue-router": "3.6.5",
+    "vuedraggable": "^2.24.3",
+    "vuetify": "^2.6.0",
+    "vuex": "3.5.1",
+    "vuex-persistedstate": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.13",
+    "@vue/cli-plugin-router": "~4.5.13",
+    "@vue/cli-service": "~4.5.13",
+    "eslint-plugin-vue": "^6.2.2",
+    "prettier": "^2.2.1",
+    "sass": "~1.32.0",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-vuetify": "~2.5.1",
+    "vue-template-compiler": "^2.6.11",
+    "vuetify-loader": "^1.7.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
